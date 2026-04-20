@@ -1,0 +1,9 @@
+{
+	"name": "vikasdfazureproject",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "7ac3b889-3ad0-47da-817d-0f017d17b15b",
+		"tenantId": "38cd70f5-07eb-4d05-b4f4-b93824a5e72f"
+	}
+}
