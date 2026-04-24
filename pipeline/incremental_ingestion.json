@@ -3,9 +3,16 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ForEach",
+				"name": "ForEach_Tables",
 				"type": "ForEach",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "lookup_metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
@@ -13,31 +20,6 @@
 						"type": "Expression"
 					},
 					"activities": [
-						{
-							"name": "lookup_metadata",
-							"type": "Lookup",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"dataset": {
-									"referenceName": "azure_sql",
-									"type": "DatasetReference"
-								},
-								"firstRowOnly": false
-							}
-						},
 						{
 							"name": "AzureSQLtoLake",
 							"type": "Copy",
@@ -218,14 +200,7 @@
 						{
 							"name": "lookup_last_cdc",
 							"type": "Lookup",
-							"dependsOn": [
-								{
-									"activity": "lookup_metadata",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
+							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -253,23 +228,38 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "lookup_metadata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM ingestion_metadata;",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "azure_sql",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
 			}
 		],
-		"parameters": {
-			"table": {
-				"type": "string"
-			},
-			"schema": {
-				"type": "string"
-			},
-			"cdc_col": {
-				"type": "string"
-			}
-		},
 		"variables": {
-			"current_ts": {
-				"type": "String"
-			},
 			"log_message": {
 				"type": "String"
 			}
