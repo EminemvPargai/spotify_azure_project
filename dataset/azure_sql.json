@@ -1,0 +1,16 @@
+{
+	"name": "azure_sql",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azure_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ingestion_metadata"
+		}
+	}
+}
