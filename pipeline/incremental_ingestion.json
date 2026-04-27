@@ -43,7 +43,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "@concat(\n'SELECT * FROM ',\nitem().schema_name, '.', item().table_name,\n' WHERE ', item().cdc_col,\n' > ''', coalesce(activity('lookup_last_cdc').output.firstRow.last_cdc, '1900-01-01'), ''''\n)",
+										"value": "SELECT * FROM [@{item().schema_name}].[@{item().table_name}] \nWHERE [@{item().cdc_col}] > COALESCE('@{activity('lookup_last_cdc').output.value[0].last_cdc}', '1900-01-01')",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -157,7 +157,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "UPDATE cdc_control\r\nSET last_cdc = '@{activity('lookup_max_cdc').output.firstRow.max_cdc}' WHERE table_name = '@{item().table_name}'",
+														"value": "UPDATE cdc_control\nSET last_cdc = '@{activity('lookup_max_cdc').output.value[0].max_cdc}' WHERE table_name = '@{item().table_name}'",
 														"type": "Expression"
 													}
 												}
@@ -181,7 +181,7 @@
 											"source": {
 												"type": "AzureSqlSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n'SELECT MAX(', item().cdc_col, ') as max_cdc FROM ',\nitem().schema_name, '.', item().table_name\n)",
+													"value": "SELECT MAX(@{item().cdc_col}) as max_cdc FROM @{item().schema_name}.@{item().table_name}",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -213,7 +213,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "SELECT last_cdc FROM cdc_control WHERE table_name = @{item().table_name};",
+										"value": "SELECT last_cdc FROM cdc_control WHERE table_name = '@{item().table_name}';",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -261,6 +261,9 @@
 		],
 		"variables": {
 			"log_message": {
+				"type": "String"
+			},
+			"debug_query": {
 				"type": "String"
 			}
 		},
